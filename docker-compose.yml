@@ -1,7 +1,7 @@
 version: '3'
 services:
   deployment-service:
-    image: ghcr.io/eclipse-researchlabs/smartclide-deployment-service:master
+    image: ghcr.io/eclipse-opensmartclide/smartclide-deployment-service:master
     container_name: deployment-service
     hostname: deployment-service
     ports:
