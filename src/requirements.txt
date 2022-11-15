@@ -17,7 +17,7 @@ idna==3.3
 iniconfig==1.1.1
 jmespath==1.0.0
 kubernetes==23.3.0
-oauthlib==3.2.0
+oauthlib==3.2.1
 packaging==21.3
 paho-mqtt==1.6.1
 pick==1.2.0
