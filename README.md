@@ -13,7 +13,7 @@ kubectl create clusterrolebinding k8sadmin --clusterrole=cluster-admin --service
 # Create and print secret
 kubectl -n kube-system describe secret $(sudo kubectl -n kube-system get secret | (grep k8sadmin || echo "$_") | awk '{print $1}') | grep token: | awk '{print $2}'
 # Print k8 url
-```kubectl config view | grep server | cut -f 2- -d ":" | tr -d " "```
+```kubectl config view | grep server | cut -f 2- -d ":" | tr -d " "
 ```
 
 

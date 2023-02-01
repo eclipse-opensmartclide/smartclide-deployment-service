@@ -21,7 +21,6 @@ class KubernetesDeploymentOutputGateway(object):
         self.aApiClient = client.ApiClient(self.aConfiguration)
         self.apps_v1_api = client.AppsV1Api(self.aApiClient)
         self.networking_v1_api = client.NetworkingV1Api()
-
         
     def run(self, name, image, port, replicas):
         try:
@@ -94,7 +93,7 @@ class KubernetesDeploymentOutputGateway(object):
             )
 
             # Deployment
-            deployment = client.V1Deployment(
+            deployment_body = client.V1Deployment(
                 api_version="apps/v1",
                 kind="Deployment",
                 metadata=client.V1ObjectMeta(name=name),
@@ -102,10 +101,11 @@ class KubernetesDeploymentOutputGateway(object):
             )
 
             deployment = self.apps_v1_api.create_namespaced_deployment(
-                namespace=name.replace('_', '-'), 
-                body=deployment
+                namespace=name, 
+                body=deployment_body
             )
             return deployment
+
         except Exception as d_ex:
             l.error('Failed to crete deployment: {}'.format(d_ex))
             import traceback; traceback.print_exc()

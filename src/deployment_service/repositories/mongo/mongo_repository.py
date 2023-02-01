@@ -3,16 +3,17 @@ from pymongo import MongoClient
 from deployment_service.config.settings import Settings
 
 class MongoRepo:
-    def __init__(self, db_name='deployment_component', page_size=50 )-> None:
+    def __init__(self, collection_name='deployment_component', page_size=50 )-> None:
         settings = Settings()
         self.host = settings.repositories['mongo']['host']
         self.port = int(settings.repositories['mongo']['port'])
         self.user = urllib.parse.quote_plus(settings.repositories['mongo']['user'])
         self.password = urllib.parse.quote_plus(settings.repositories['mongo']['password'])
-        db = self.__get_mongo_client(db_name)
-        self.deployments_db = db.deployments
+        self.database = settings.repositories['mongo']['database']
+        db = self.__get_mongo_client()
+        self.deployments_col = db[collection_name]
 
-    def __get_mongo_client(self, db_name):
+    def __get_mongo_client(self):
         if self.user and self.password:
             client = MongoClient('mongodb://{}:{}@{}:{}'.format(
                 self.user,
@@ -25,5 +26,4 @@ class MongoRepo:
                 self.host,
                 port=self.port, 
             )
-        db = client[db_name]
-        return db
+        return client

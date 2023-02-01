@@ -6,10 +6,15 @@ class Settings():
     def __init__(self):
         self.repositories = {
             'mongo': {
-                'host': os.environ.get('MONGO_HOST',config('MONGO_HOST')),
-                'port': os.environ.get('MONGO_PORT',config('MONGO_PORT')),
-                'user': os.environ.get('MONGO_USER',config('MONGO_USER')),
-                'password': os.environ.get('MONGO_PASSWORD',config('MONGO_PASSWORD'))
+                'host': os.environ.get('MONGO_HOST', config('MONGO_HOST')),
+                'port': os.environ.get('MONGO_PORT', config('MONGO_PORT')),
+                'user': os.environ.get('MONGO_USER', config('MONGO_USER')),
+                'password': os.environ.get('MONGO_PASSWORD',config('MONGO_PASSWORD')),
+                'database': os.environ.get('MONGO_DATABASE',config('MONGO_DATABASE')),
+            }, 
+            'dbapi': {
+                'url': os.environ.get('DBAPI_URL',config('DBAPI_URL')),
+                'token': os.environ.get('DBAPI_TOKEN',config('DBAPI_TOKEN'))
             }
         }
         

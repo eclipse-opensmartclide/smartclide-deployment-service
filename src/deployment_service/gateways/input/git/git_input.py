@@ -3,7 +3,6 @@ import os
 import yaml
 import shutil
 from git import Repo
-from deployment_service.config import settings
 from deployment_service.config.logging import logger as l
 from deployment_service.config.settings import Settings
 
@@ -22,11 +21,12 @@ class GitInputGateway(object):
             dest_path = f'{self.repo_dir}{repo_name}'
             self.__repo = Repo.clone_from(repo_url, dest_path)        
             return dest_path
-        except Exception as ex:
-            l.error(f'{ex}: Failed to clone repo ')
+        except Exception as excp:
+            l.error(f'{excp}: Failed to clone repo ')
             import traceback
             traceback.print_exc()
-    
+            raise Exception(excp.stderr)
+                
     def commit_changes(self, repo_path):
         try:
             git_repo = Repo(repo_path)
