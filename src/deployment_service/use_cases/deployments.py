@@ -4,6 +4,7 @@ from kubernetes.dynamic.exceptions import NotFoundError, ApiException
 from datetime import datetime
 from deployment_service.gateways.output.mom.amqp import MOMAMQPOutputGateway
 from deployment_service.repositories.mongo.deployment import MongoDeploymentRepository
+from deployment_service.repositories.dbapi.deployment import DBAPIDeploymentRepository
 from deployment_service.gateways.output.deploy.kubernetes import KubernetesDeploymentOutputGateway
 from deployment_service.gateways.input.git.git_input import GitInputGateway
 from deployment_service.gateways.input.dockerfile.sheet import DockerfileSheet
@@ -14,7 +15,7 @@ settings = Settings()
 def get_deployments_list(gateway):
     return gateway.list_deployments()
 
-def create_or_update_deployment(k8s_url, k8s_token, name, username, container_port, replicas, gitlab_ci_path):  
+def create_or_update_deployment(k8s_url, k8s_token, name, username, container_port, replicas, gitlab_ci_path, service_id):  
     k_gw = KubernetesDeploymentOutputGateway(k8s_url, k8s_token, gitlab_ci_path) 
     deployment_result = k_gw.run(
             name=name, 
@@ -31,6 +32,7 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
         
     if deployment_result:
         repo = MongoDeploymentRepository()
+        repo = DBAPIDeploymentRepository()
         id = str(uuid.uuid4())
         deployment = repo.create_or_update_deployment(
             {
@@ -40,18 +42,24 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
                 'port': container_port,
                 'service_url': 'http://{}:{}'.format(deployment_result, container_port),
                 'replicas': replicas,
-                'status': 'active',
+                'state': 'active',
                 'k8s_url': k8s_url,
                 'created_at': datetime.now().isoformat(),
-                'stopped_at': ''
+                'stopped_at': '',
+                'service_id': service_id
             }
         )
 
-        if deployment: 
+        if  deployment: 
             # return deployment.to_dict()
-            mom_gw = MOMAMQPOutputGateway()
-            ret = mom_gw.send_deployment_is_running(name, id)
-            if ret: return deployment.to_dict()
+            
+            # mom_gw = MOMAMQPOutputGateway()
+            # ret = mom_gw.send_deployment_is_running(name, id)
+            # if ret: 
+            import pdb;pdb.set_trace()
+            return deployment.to_dict()
+        
+        else: raise Exception('Failed to create or update deployment')
 
 def clone_repository(url, branch):
     g_gw = GitInputGateway()
@@ -81,7 +89,7 @@ def prepare_deployment(repository_url, repository_token, branch):
     auth_url = ''.join(auth_url_parts)
 
     repository_path = clone_repository(auth_url, branch)
-
+    # if not repository_path:
     if not check_dockerfile_exists(repository_path): 
         generate_dockerfile(repository_url, repository_path, repository_token)
         return False
