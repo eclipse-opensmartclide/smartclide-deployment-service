@@ -50,16 +50,14 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
             }
         )
 
-        if  deployment: 
-            # return deployment.to_dict()
-            
-            # mom_gw = MOMAMQPOutputGateway()
-            # ret = mom_gw.send_deployment_is_running(name, id)
-            # if ret: 
-            import pdb;pdb.set_trace()
-            return deployment.to_dict()
+        if  deployment:             
+            mom_gw = MOMAMQPOutputGateway()
+            ret = mom_gw.send_deployment_is_running(name, id)
+            if ret: 
+                return deployment.to_dict()
         
-        else: raise Exception('Failed to create or update deployment')
+        else: 
+            raise Exception('Failed to create or update deployment')
 
 def clone_repository(url, branch):
     g_gw = GitInputGateway()
