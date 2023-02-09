@@ -9,6 +9,7 @@ from deployment_service.gateways.output.deploy.kubernetes import KubernetesDeplo
 from deployment_service.gateways.input.git.git_input import GitInputGateway
 from deployment_service.gateways.input.dockerfile.sheet import DockerfileSheet
 from deployment_service.config.settings import Settings
+from deployment_service.config.logging import logger as l
 
 settings = Settings()
 
@@ -50,11 +51,13 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
             }
         )
 
-        if  deployment:             
+        if  deployment and settings.mom['host'] and settings.mom['port']:             
             mom_gw = MOMAMQPOutputGateway()
             ret = mom_gw.send_deployment_is_running(name, id)
-            if ret: 
-                return deployment.to_dict()
+            if not ret:
+                l.error('Failed to notify to MOM')
+            
+            return deployment.to_dict()
         
         else: 
             raise Exception('Failed to create or update deployment')

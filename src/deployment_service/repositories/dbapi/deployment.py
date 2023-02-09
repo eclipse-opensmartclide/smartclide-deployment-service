@@ -62,9 +62,7 @@ class DBAPIDeploymentRepository(object):
     def list_deployments(self, user, project, skip: int = 0, limit: int=20) -> list:
         filters = {'user': user, 'project': project}
         try:
-            filters = {}
-            deployments = requests.get(self.url, headers=self.headers)
-            raise DeploymentServiceException('Hiiiiiiiiiiiii')
+            deployments = requests.get(self.url, params=filters, headers=self.headers)
             if deployments.status_code == 200:
                 deployments = deployments.json()[skip:(skip+limit)]
 
