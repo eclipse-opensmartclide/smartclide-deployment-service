@@ -57,7 +57,7 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
             if not ret:
                 l.error('Failed to notify to MOM')
             
-            return deployment.to_dict()
+            return deployment
         
         else: 
             raise Exception('Failed to create or update deployment')

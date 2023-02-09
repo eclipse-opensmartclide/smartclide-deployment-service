@@ -38,7 +38,7 @@ class DBAPIDeploymentRepository(object):
             deployment_obj =  self._create_deployment_obj(deployment)
             response = requests.post(self.url, json=json.dumps(deployment_obj.to_dict()), headers=self.headers)
             if response.status_code == 200: return deployment_obj
-            else: return response.status_code
+            else: return response
 
         except Exception as ex:
             print('{}: Failed to update or create deployment'.format(ex))

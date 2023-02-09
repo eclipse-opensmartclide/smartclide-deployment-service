@@ -84,7 +84,7 @@ async def run_deployment(
             if isinstance(result, ApiException):
                 return JSONResponse(content={'message': json.loads(result.body)['message']}, status_code=result.status)
             else:
-                return JSONResponse(content = result,status_code = 200 )
+                return JSONResponse(content = result.to_dict(),status_code = 200 )
         # else:
         #     return JSONResponse(content={'message': 'Deployment already running'}, status_code=409)
 
