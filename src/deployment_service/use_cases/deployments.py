@@ -52,7 +52,7 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
         )
 
         
-        if settings.mom['host'] and settings.mom['port']
+        if settings.mom['host'] and settings.mom['port']:
             mom_gw = MOMAMQPOutputGateway()
             ret = mom_gw.send_deployment_is_running(name, id)
             if not ret:
