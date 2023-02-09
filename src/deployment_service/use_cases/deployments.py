@@ -51,14 +51,15 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
             }
         )
 
-        if  deployment and settings.mom['host'] and settings.mom['port']:             
+        
+        if settings.mom['host'] and settings.mom['port']
             mom_gw = MOMAMQPOutputGateway()
             ret = mom_gw.send_deployment_is_running(name, id)
             if not ret:
                 l.error('Failed to notify to MOM')
             
-            return deployment
-        
+        if  deployment:             
+            return deployment    
         else: 
             raise Exception('Failed to create or update deployment')
 
