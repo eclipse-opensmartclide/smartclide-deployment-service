@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:23.04
 
 RUN apt-get update && apt-get -y install software-properties-common
 RUN add-apt-repository ppa:mozillateam/firefox-next
