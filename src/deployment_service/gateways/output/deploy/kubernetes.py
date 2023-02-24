@@ -61,7 +61,8 @@ class KubernetesDeploymentOutputGateway(object):
             try:
                 f_content = yaml.safe_load(stream)
                 services = list(filter(lambda x: 'name' in x, f_content['services']))
-                return list(map(lambda s: self._get_container_obj(s['name'], s['name'].split(':')[0]), services))
+                support_containers_services = list(map(lambda s: self._get_container_obj(s['name'], s['name'].split(':')[0]), services))
+                return support_containers_services
 
             except yaml.YAMLError as ex:
                 l.error('Failed to parse .gitlab-ci.yaml file {}'.format(ex))

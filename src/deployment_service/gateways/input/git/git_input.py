@@ -2,6 +2,7 @@
 import os
 import yaml
 import shutil
+from git.exc import GitCommandError 
 from git import Repo
 from deployment_service.config.logging import logger as l
 from deployment_service.config.settings import Settings
@@ -84,16 +85,21 @@ class GitInputGateway(object):
             import traceback
             traceback.print_exc()
 
-    def push_repository(self, repo_path) -> bool:
-        try:
-            git_repo = Repo(repo_path, search_parent_directories=True)
+    def push_repository(self, repo_path, pull: bool) -> bool:
+        git_repo = Repo(repo_path, search_parent_directories=True)
             # origin = git_repo.remote(name='origin')
             # origin.push()
             # # git_repo.git.branch('master')
-            git_repo.remotes.origin.pull()
+            
+        try:
+            if pull:
+                git_repo.remotes.origin.pull()
             git_repo.remotes.origin.push()
             return True
 
+        except GitCommandError:
+            print('DDDDDDDD')
+            import pdb; pdb.set_trace()
         except Exception as ex:
             l.error(f'{ex}: Failed to push repository')
             import traceback

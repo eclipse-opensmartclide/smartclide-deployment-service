@@ -6,6 +6,8 @@ RUN add-apt-repository ppa:mozillateam/firefox-next
 RUN apt-get install -y --no-install-recommends python3-pip git wget firefox 
 
 COPY ./src /deployment-service
+ADD ./.env /deployment-service/.env
+
 WORKDIR "/deployment-service/"
 
 RUN python3 -m pip install -r requirements.txt

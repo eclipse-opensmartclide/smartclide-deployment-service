@@ -36,8 +36,8 @@ class DBAPIDeploymentRepository(object):
             service_fields = self._get_service_fields(deployment['service_id'])
             deployment.update(service_fields)
             deployment_obj =  self._create_deployment_obj(deployment)
-            response = requests.post(self.url, json=json.dumps(deployment_obj.to_dict()), headers=self.headers)
-            if response.status_code == 200: return deployment_obj
+            response = requests.post(self.url, json=deployment_obj.to_dict(), headers=self.headers)
+            if response.status_code == 201: return deployment_obj
             else: return response
 
         except Exception as ex:
