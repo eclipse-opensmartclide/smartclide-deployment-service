@@ -75,16 +75,16 @@ async def run_deployment(
     replicas: Optional[int] = 1):
     
     try:
-        gitlab_ci_path = prepare_deployment(repository_url, gitlab_token, branch)
+        gitlab_ci_path = prepare_deployment(username, repository_name, repository_url, gitlab_token, branch)
         if gitlab_ci_path:
             result = create_or_update_deployment(k8s_url, k8s_token, repository_name, username, container_port, replicas, gitlab_ci_path, service_id)
         else: 
-            return JSONResponse(content ={'message': 'Can not deploy'}, status_code = 404 ) 
+            return JSONResponse(content ={'message': 'Cannot deploy'}, status_code = 404 ) 
         if result:
             if isinstance(result, ApiException):
                 return JSONResponse(content={'message': json.loads(result.body)['message']}, status_code=result.status)
             else:
-                return JSONResponse(content = result,status_code = 200 )
+                return JSONResponse(content = result.to_dict(),status_code = 200 )
         # else:
         #     return JSONResponse(content={'message': 'Deployment already running'}, status_code=409)
 

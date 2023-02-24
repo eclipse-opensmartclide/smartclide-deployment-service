@@ -36,9 +36,9 @@ class DBAPIDeploymentRepository(object):
             service_fields = self._get_service_fields(deployment['service_id'])
             deployment.update(service_fields)
             deployment_obj =  self._create_deployment_obj(deployment)
-            response = requests.post(self.url, json=json.dumps(deployment_obj.to_dict()), headers=self.headers)
-            if response.status_code == 200: return deployment_obj
-            else: return response.status_code
+            response = requests.post(self.url, json=deployment_obj.to_dict(), headers=self.headers)
+            if response.status_code == 201: return deployment_obj
+            else: return response
 
         except Exception as ex:
             print('{}: Failed to update or create deployment'.format(ex))
@@ -62,9 +62,7 @@ class DBAPIDeploymentRepository(object):
     def list_deployments(self, user, project, skip: int = 0, limit: int=20) -> list:
         filters = {'user': user, 'project': project}
         try:
-            filters = {}
-            deployments = requests.get(self.url, headers=self.headers)
-            raise DeploymentServiceException('Hiiiiiiiiiiiii')
+            deployments = requests.get(self.url, params=filters, headers=self.headers)
             if deployments.status_code == 200:
                 deployments = deployments.json()[skip:(skip+limit)]
 

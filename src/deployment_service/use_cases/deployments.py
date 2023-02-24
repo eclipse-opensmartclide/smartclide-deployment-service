@@ -9,6 +9,7 @@ from deployment_service.gateways.output.deploy.kubernetes import KubernetesDeplo
 from deployment_service.gateways.input.git.git_input import GitInputGateway
 from deployment_service.gateways.input.dockerfile.sheet import DockerfileSheet
 from deployment_service.config.settings import Settings
+from deployment_service.config.logging import logger as l
 
 settings = Settings()
 
@@ -50,16 +51,16 @@ def create_or_update_deployment(k8s_url, k8s_token, name, username, container_po
             }
         )
 
-        if  deployment: 
-            # return deployment.to_dict()
+        if settings.mom['host'] and settings.mom['port']:
+            mom_gw = MOMAMQPOutputGateway()
+            ret = mom_gw.send_deployment_is_running(name, id)
+            if not ret:
+                l.error('Failed to notify to MOM')
             
-            # mom_gw = MOMAMQPOutputGateway()
-            # ret = mom_gw.send_deployment_is_running(name, id)
-            # if ret: 
-            import pdb;pdb.set_trace()
-            return deployment.to_dict()
-        
-        else: raise Exception('Failed to create or update deployment')
+        if  deployment:             
+            return deployment    
+        else: 
+            raise Exception('Failed to create or update deployment')
 
 def clone_repository(url, branch):
     g_gw = GitInputGateway()
@@ -81,7 +82,7 @@ def generate_gitlab_ci_file(repo_path):
     g_gw = GitInputGateway()
     g_gw.write_cdci_file(repo_path)
 
-def prepare_deployment(repository_url, repository_token, branch):
+def prepare_deployment(username, repository_name, repository_url, repository_token, branch):
     url_parts = repository_url.split('//')
     auth_url_parts = []
     auth_url_parts.append('https://oauth2:{}@'.format(repository_token))
@@ -99,7 +100,9 @@ def prepare_deployment(repository_url, repository_token, branch):
 
     g_gw = GitInputGateway()
     g_gw.commit_changes(repository_path)
-    result = g_gw.push_repository(repository_path)
+    g_gw.update_remote(remote_url=f"{settings.gitlab['url']}{username}/{repository_name}", repo_path=repository_path)
+
+    result = g_gw.push_repository(repository_path, pull=False)
     if result:
         gl_ci_path = '{}/.gitlab-ci.yml'.format(repository_path)
         return gl_ci_path
